@@ -1,5 +1,12 @@
-const CACHE_NAME = 'goldex-v1'
-const ASSETS = ['/', '/index.html', '/manifest.webmanifest', '/icon.svg', '/maskable.svg']
+const BASE = '/gold-mvp/'
+const CACHE_NAME = 'goldex-v2'
+const ASSETS = [
+  BASE,
+  `${BASE}index.html`,
+  `${BASE}manifest.webmanifest`,
+  `${BASE}icon.svg`,
+  `${BASE}maskable.svg`
+]
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
