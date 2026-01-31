@@ -206,6 +206,8 @@ function App() {
     { id: 'N-1003', title: 'Verification pending', body: 'KYC review in progress.', time: '1d' },
   ])
   const [authStep, setAuthStep] = useState('intro')
+  const [legalRead, setLegalRead] = useState(false)
+  const [legalMode, setLegalMode] = useState('flow')
   const [otpCode, setOtpCode] = useState('')
   const [password, setPassword] = useState('')
   const [tradeMode, setTradeMode] = useState('buy')
@@ -857,17 +859,37 @@ function App() {
     </div>
   )
 
+  const goToLegal = (mode = 'flow') => {
+    setLegalRead(false)
+    setLegalMode(mode)
+    setAuthStep('legal')
+  }
+
   const renderAuth = () => (
     <motion.div key="auth" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="px-6 pb-16 pt-6">
       <PageHeader title={t('authTitle')} onBack={() => navigate('home')} />
       {authStep === 'intro' && (
         <div className="grid gap-6 text-center">
           <div className="text-3xl font-semibold">Goldex</div>
-          <div className="grid gap-3">
+          <motion.div
+            key={`intro-${activeSlide}`}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            className="grid gap-3"
+          >
             <div className="text-2xl font-semibold">{t(SLIDES[activeSlide].key)}</div>
             <p className="text-sm text-[hsl(var(--muted-foreground))]">{t(SLIDES[activeSlide].text)}</p>
-          </div>
-          <img src={SLIDES[activeSlide].image} alt="Intro" className="mx-auto h-44 w-44 object-contain" />
+          </motion.div>
+          <motion.img
+            key={`intro-img-${activeSlide}`}
+            src={SLIDES[activeSlide].image}
+            alt="Intro"
+            className="mx-auto h-44 w-44 object-contain"
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+          />
           <div className="flex justify-center gap-2">
             {SLIDES.map((_, idx) => (
               <button
@@ -882,7 +904,7 @@ function App() {
             <Button size="lg" onClick={() => setAuthStep('login')}>{t('signIn')}</Button>
             <Button size="lg" variant="secondary" onClick={() => setAuthStep('signup')}>{t('signUp')}</Button>
           </div>
-          <button className="text-xs text-[hsl(var(--muted-foreground))] underline" onClick={() => navigate('legal')}>
+          <button className="text-xs text-[hsl(var(--muted-foreground))] underline" onClick={() => goToLegal('pre')}>
             {t('legal')}
           </button>
         </div>
@@ -919,7 +941,7 @@ function App() {
               inputClass="form-control"
               containerClass="w-full"
             />
-            <Button size="lg" onClick={() => setAuthStep('legal')}>{t('continue')}</Button>
+            <Button size="lg" onClick={() => setAuthStep('otp')}>{t('continue')}</Button>
           </CardContent>
         </Card>
       )}
@@ -961,7 +983,7 @@ function App() {
                 onChange={(event) => setPassword(event.target.value)}
               />
             </div>
-            <Button size="lg" onClick={() => setAuthStep('legal')}>{t('continue')}</Button>
+            <Button size="lg" onClick={() => goToLegal('flow')}>{t('continue')}</Button>
           </CardContent>
         </Card>
       )}
@@ -974,10 +996,10 @@ function App() {
           </CardHeader>
           <CardContent className="grid gap-4">
             <div
-              className="max-h-[220px] overflow-y-auto rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--secondary))] p-4 text-xs text-[hsl(var(--muted-foreground))]"
+              className="max-h-[240px] overflow-y-auto rounded-2xl border border-[hsl(var(--border))] bg-[hsl(var(--secondary))] p-4 text-xs text-[hsl(var(--muted-foreground))]"
               onScroll={(event) => {
                 const el = event.currentTarget
-                if (el.scrollTop + el.clientHeight >= el.scrollHeight - 4) setAuthStep('legal-read')
+                if (el.scrollTop + el.clientHeight >= el.scrollHeight - 6) setLegalRead(true)
               }}
             >
               <p>{t('agreeTerms')}</p>
@@ -986,18 +1008,26 @@ function App() {
               <p className="mt-3">{t('agreeAml')}</p>
               <p className="mt-3">{t('agreeComms')}</p>
             </div>
-            <label className="flex items-center gap-3 text-xs text-[hsl(var(--muted-foreground))]">
-              <input
-                type="checkbox"
-                className="h-4 w-4 accent-[hsl(var(--primary))]"
-                checked={authStep === 'legal-read'}
-                readOnly
-              />
-              {t('readAndAccept')}
-            </label>
-            <Button size="lg" disabled={authStep !== 'legal-read'} onClick={() => setAuthStep('otp')}>
-              {t('confirm')}
-            </Button>
+            {legalMode === 'flow' ? (
+              <>
+                <label className="flex items-center gap-3 text-xs text-[hsl(var(--muted-foreground))]">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 accent-[hsl(var(--primary))]"
+                    checked={legalRead}
+                    onChange={(event) => setLegalRead(event.target.checked)}
+                  />
+                  {t('readAndAccept')}
+                </label>
+                <Button size="lg" disabled={!legalRead} onClick={() => { setSession({ ...normalizedSession, isLoggedIn: true }); navigate('home') }}>
+                  {t('confirm')}
+                </Button>
+              </>
+            ) : (
+              <Button size="lg" variant="secondary" onClick={() => setAuthStep('intro')}>
+                {t('back')}
+              </Button>
+            )}
           </CardContent>
         </Card>
       )}
