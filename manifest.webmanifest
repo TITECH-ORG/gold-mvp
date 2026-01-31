@@ -1,19 +1,20 @@
 {
   "name": "Goldex",
   "short_name": "Goldex",
-  "start_url": "/",
+  "start_url": "/gold-mvp/",
+  "scope": "/gold-mvp/",
   "display": "standalone",
-  "background_color": "#f6f7fb",
-  "theme_color": "#0b1d41",
+  "background_color": "#0b0b0f",
+  "theme_color": "#0b0b0f",
   "icons": [
     {
-      "src": "/icon.svg",
+      "src": "/gold-mvp/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "/maskable.svg",
+      "src": "/gold-mvp/maskable.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "maskable"
