@@ -26,10 +26,11 @@ const defaultState = {
   seeded: true,
 }
 
+const BASE_URL = import.meta.env.BASE_URL || '/'
 const IMAGE_SET = {
-  gold: '/hero-image.webp',
-  silver: '/silver.png',
-  platinum: '/platinum.png',
+  gold: `${BASE_URL}hero-image.webp`,
+  silver: `${BASE_URL}silver.png`,
+  platinum: `${BASE_URL}platinum.png`,
 }
 
 const SLIDES = [
